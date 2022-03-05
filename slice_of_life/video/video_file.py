@@ -1,10 +1,3 @@
-import subprocess
-from pymediainfo import MediaInfo
-import os
-import shutil
-from mutagen.easyid3 import EasyID3
-
-
 class VideoFile:
 
     title: str

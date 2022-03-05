@@ -1,13 +1,7 @@
-import subprocess
-from alive_progress import alive_bar
-import time
 from tqdm import tqdm
 from ffmpeg_progress_yield import FfmpegProgress
-from pymediainfo import MediaInfo
 import os
-import shutil
-from mutagen.easyid3 import EasyID3
-from .video_file import VideoFile
+from video.video_file import VideoFile
 from audio.audio_file import AudioFile
 
 
@@ -35,14 +29,17 @@ class VideoHandler:
                         absolute_path=f'{path}/{file}'
                     )
                 )
+
         return videos
 
-    def bulk_extract_audio_from_videos(self, video_files: list[VideoFile], destination_path: str) -> list[AudioFile]:
+    def bulk_extract_audio_from_videos(
+        self, video_files: list[VideoFile], destination_path: str,
+    ) -> list[AudioFile]:
 
         audio_files = []
         file_ext = '.mp3'
 
-        for video_file in video_files:
+        for video_file in tqdm(video_files, total=len(video_files)):
 
             output_file = f'{video_file.title}{file_ext}'
             output_full_path = f'{destination_path}/{output_file}'
