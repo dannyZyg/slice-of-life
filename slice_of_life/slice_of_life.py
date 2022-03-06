@@ -9,7 +9,7 @@ def handler(signal_received, frame):
     exit(0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     signal(SIGINT, handler)
 
@@ -24,10 +24,10 @@ if __name__ == '__main__':
     confirm_args(args=args, video_files=videos)
 
     num_videos = len(videos)
-    num_text_video = '1 video' if num_videos == 1 else f'{num_videos} videos'
+    num_text_video = "1 video" if num_videos == 1 else f"{num_videos} videos"
 
-    print(f'Extracting audio from {num_text_video}...\n')
-    print('\n')
+    print(f"Extracting audio from {num_text_video}...\n")
+    print("\n")
 
     audio_files = video_handler.bulk_extract_audio_from_videos(
         video_files=videos,
@@ -36,16 +36,16 @@ if __name__ == '__main__':
 
     audio_handler = AudioHandler()
     num_audio = len(audio_files)
-    num_text_audio = '1 audio file' if num_audio == 1 else f'{num_audio} files'
+    num_text_audio = "1 audio file" if num_audio == 1 else f"{num_audio} files"
 
-    print(f'Slicing audio for {num_text_video}...\n')
+    print(f"Slicing audio for {num_text_video}...\n")
 
     split_audio_files = audio_handler.bulk_split_audio_files(
         audio_files=audio_files,
         destination_path=args.output_dir,
     )
 
-    print('Tagging MP3 files...\n')
+    print("Tagging MP3 files...\n")
 
     audio_handler.bulk_tag_mp3s(
         audio_files=split_audio_files,
@@ -53,4 +53,4 @@ if __name__ == '__main__':
         album_name=args.album_name,
     )
 
-    print('Done!')
+    print("Done!")

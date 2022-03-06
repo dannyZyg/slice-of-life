@@ -6,16 +6,16 @@ from audio.audio_file import AudioFile
 
 
 class VideoHandler:
-    """ A class responsible for handling and processing multiple video files. """
+    """A class responsible for handling and processing multiple video files."""
 
     def validate_is_supported_video_file(self, file_extension: str) -> bool:
-        supported_file_extensions = ['.mkv', '.mp4']
+        supported_file_extensions = [".mkv", ".mp4"]
         return file_extension in supported_file_extensions
 
     @staticmethod
     def list_videos(videos: list[VideoFile]) -> None:
         for video in videos:
-            print(f'{video.title}{video.extension}')
+            print(f"{video.title}{video.extension}")
 
     def load_videos_in_directory(self, path: str) -> list[VideoFile]:
 
@@ -27,27 +27,23 @@ class VideoHandler:
             is_supported_file_type = self.validate_is_supported_video_file(file_ext)
 
             if is_supported_file_type:
-                videos.append(
-                    VideoFile(
-                        title=file_title,
-                        extension=file_ext,
-                        absolute_path=f'{path}/{file}'
-                    )
-                )
+                videos.append(VideoFile(title=file_title, extension=file_ext, absolute_path=f"{path}/{file}"))
 
         return videos
 
     def bulk_extract_audio_from_videos(
-        self, video_files: list[VideoFile], destination_path: str,
+        self,
+        video_files: list[VideoFile],
+        destination_path: str,
     ) -> list[AudioFile]:
 
         audio_files = []
-        file_ext = '.mp3'
+        file_ext = ".mp3"
 
         for video_file in tqdm(video_files, total=len(video_files)):
 
-            output_file = f'{video_file.title}{file_ext}'
-            output_full_path = f'{destination_path}/{output_file}'
+            output_file = f"{video_file.title}{file_ext}"
+            output_full_path = f"{destination_path}/{output_file}"
 
             did_extract = self.extract_audio(
                 video_file=video_file,
@@ -67,22 +63,29 @@ class VideoHandler:
         return audio_files
 
     def extract_audio(self, video_file: VideoFile, audio_track: int, output_file: str) -> bool:
-        """ Extracts an audio track from a video file using ffmpeg. """
+        """Extracts an audio track from a video file using ffmpeg."""
 
         if os.path.isfile(video_file.absolute_path):
 
             command = [
-                'ffmpeg',
-                '-y',
-                '-i', f'{video_file.absolute_path}',
-                '-vn',
-                '-ar', '44100',
-                '-ac', '2',
-                '-ab', '192k',
-                '-f', 'mp3',
-                '-map', '0:v:0',
-                '-map', f'0:a:{audio_track}',
-                f'{output_file}',
+                "ffmpeg",
+                "-y",
+                "-i",
+                f"{video_file.absolute_path}",
+                "-vn",
+                "-ar",
+                "44100",
+                "-ac",
+                "2",
+                "-ab",
+                "192k",
+                "-f",
+                "mp3",
+                "-map",
+                "0:v:0",
+                "-map",
+                f"0:a:{audio_track}",
+                f"{output_file}",
             ]
             ff = FfmpegProgress(command)
 
@@ -93,5 +96,5 @@ class VideoHandler:
             return True
 
         else:
-            print(f'File {video_file} does not exist.')
+            print(f"File {video_file} does not exist.")
             return False
