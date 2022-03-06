@@ -36,9 +36,9 @@ if __name__ == "__main__":
 
     audio_handler = AudioHandler()
     num_audio = len(audio_files)
-    num_text_audio = "1 audio file" if num_audio == 1 else f"{num_audio} files"
+    num_text_audio = "1 file" if num_audio == 1 else f"{num_audio} files"
 
-    print(f"Slicing audio for {num_text_video}...\n")
+    print(f"Slicing audio for {num_text_audio}...\n")
 
     split_audio_files = audio_handler.bulk_split_audio_files(
         audio_files=audio_files,

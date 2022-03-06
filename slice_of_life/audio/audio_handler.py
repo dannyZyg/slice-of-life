@@ -10,13 +10,13 @@ class AudioHandler:
     def bulk_split_audio_files(self, audio_files: list[AudioFile], destination_path: str) -> list[AudioFile]:
 
         split_audio_files = []
-        split_path = os.path.join(destination_path, "tmp_split_audio__")
+        split_path = os.path.join(destination_path, "split_audio")
 
         if not os.path.exists(split_path):
             os.mkdir(split_path)
 
         for audio_file in audio_files:
-            episode_sub_path = os.path.join(split_path, f"episode__{audio_file.title}")
+            episode_sub_path = os.path.join(split_path, audio_file.title)
 
             if not os.path.exists(episode_sub_path):
                 os.mkdir(episode_sub_path)
@@ -37,6 +37,9 @@ class AudioHandler:
 
     def split_audio(self, audio_file: AudioFile, segment_time: int = 180, output_dir: str = "/tmp") -> bool:
         """Splits an audio track at intervals determined by the supplied segment time in seconds."""
+
+        output = f"{output_dir}/{audio_file.title}%03d.mp3"
+
         command = [
             "ffmpeg",
             "-y",
@@ -48,7 +51,7 @@ class AudioHandler:
             f"{segment_time}",
             "-c",
             "copy",
-            f"{output_dir}/{audio_file.title}%03d.mp3",
+            f"{output}",
         ]
 
         ff = FfmpegProgress(command)
