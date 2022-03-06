@@ -1,5 +1,4 @@
 from audio.audio_file import AudioFile
-from tqdm import tqdm
 from ffmpeg_progress_yield import FfmpegProgress
 import os
 from mutagen.easyid3 import EasyID3
