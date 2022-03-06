@@ -12,6 +12,11 @@ class VideoHandler:
         supported_file_extensions = ['.mkv', '.mp4']
         return file_extension in supported_file_extensions
 
+    @staticmethod
+    def list_videos(videos: list[VideoFile]) -> None:
+        for video in videos:
+            print(f'{video.title}{video.extension}')
+
     def load_videos_in_directory(self, path: str) -> list[VideoFile]:
 
         videos = []

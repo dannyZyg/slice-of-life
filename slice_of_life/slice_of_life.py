@@ -2,7 +2,7 @@ from audio.audio_handler import AudioHandler
 from video.video_handler import VideoHandler
 from signal import signal, SIGINT
 from sys import exit
-from utils.args import get_args
+from utils.args import get_args, confirm_args
 
 
 def handler(signal_received, frame):
@@ -15,24 +15,13 @@ if __name__ == '__main__':
 
     args = get_args()
 
-    video_dir = args.video_dir
-    output_dir = args.output_dir
     album_art = args.album_art
-    artist_name = args.artist_name
-    album_name = args.album_name
     segment_time = args.segment_time
 
-    print(f'Video directory: {video_dir}')
-    print(f'Output directory: {output_dir}')
-    print(f'Album Art file: {album_art}')
-    print(f'Artist tag: {artist_name}')
-    print(f'Album tag: {album_name}')
-    print(f'Segment time (seconds): {segment_time}')
-
     video_handler = VideoHandler()
-    audio_handler = AudioHandler()
+    videos = video_handler.load_videos_in_directory(path=args.video_dir)
 
-    videos = video_handler.load_videos_in_directory(path=video_dir)
+    confirm_args(args=args, video_files=videos)
 
     num_videos = len(videos)
     num_text_video = '1 video' if num_videos == 1 else f'{num_videos} videos'
@@ -42,9 +31,10 @@ if __name__ == '__main__':
 
     audio_files = video_handler.bulk_extract_audio_from_videos(
         video_files=videos,
-        destination_path='/tmp',
+        destination_path=args.output_dir,
     )
 
+    audio_handler = AudioHandler()
     num_audio = len(audio_files)
     num_text_audio = '1 audio file' if num_audio == 1 else f'{num_audio} files'
 
@@ -52,15 +42,15 @@ if __name__ == '__main__':
 
     split_audio_files = audio_handler.bulk_split_audio_files(
         audio_files=audio_files,
-        destination_path='/tmp'
+        destination_path=args.output_dir,
     )
 
     print('Tagging MP3 files...\n')
 
     audio_handler.bulk_tag_mp3s(
         audio_files=split_audio_files,
-        artist_name='hibana',
-        album_name='hibana',
+        artist_name=args.artist_name,
+        album_name=args.album_name,
     )
 
     print('Done!')
