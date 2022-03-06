@@ -10,9 +10,27 @@ mutagen = "^1.45.1"
 pymediainfo = "^5.1.0"
 ffmpeg-progress-yield = "^0.2.0"
 tqdm = "^4.63.0"
+pre-commit = "^2.17.0"
 
 [tool.poetry.dev-dependencies]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 110
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
