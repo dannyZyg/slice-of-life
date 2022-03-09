@@ -1,4 +1,5 @@
 from tqdm import tqdm
+from time import sleep
 from ffmpeg_progress_yield import FfmpegProgress
 import os
 from video.video_file import VideoFile
@@ -16,6 +17,7 @@ class VideoHandler:
     def list_videos(videos: list[VideoFile]) -> None:
         for video in videos:
             print(f"{video.title}{video.extension}")
+            print(f"    -> selected audio track :: {video.selected_audio_track.language}")
 
     def load_videos_in_directory(self, path: str) -> list[VideoFile]:
 
@@ -30,6 +32,61 @@ class VideoHandler:
                 videos.append(VideoFile(title=file_title, extension=file_ext, absolute_path=f"{path}/{file}"))
 
         return videos
+
+    def select_audio_tracks(self, videos):
+
+        first_chosen_audio_track = None
+
+        for video in videos:
+
+            while video.selected_audio_track is None:
+
+                if video.is_mkv:
+                    valid_track_ids = list(range(0, len(video.audio_tracks)))
+
+                    # Attempt to find the same track as was selected for video 1 in the subsequent videos.
+                    if first_chosen_audio_track:
+                        matching_tracks = [
+                            i
+                            for i, t in enumerate(video.audio_tracks)
+                            if t._track_id == first_chosen_audio_track._track_id
+                            and t.language == first_chosen_audio_track.language
+                        ]
+
+                        if matching_tracks:
+                            matching_audio_track = video.audio_tracks[matching_tracks[0]]
+                            print(
+                                f"* Using the audio track selected for video 1 as it exists in {video.title}"
+                            )
+                            video.selected_audio_track = matching_audio_track
+                            break
+
+                    print("--------------------------------------------------")
+                    print(f"Select audio track for {video.title}")
+                    print("--------------------------------------------------")
+                    print("The video file contains the following audio tracks:")
+                    for index, track in enumerate(video.audio_tracks):
+
+                        identifier = f"{index} : {track.language}"
+                        print(identifier)
+
+                    selected_track = input("\nPlease choose an audio track id: ")
+
+                    try:
+                        selected_track_as_int = int(selected_track)
+                        if selected_track_as_int in valid_track_ids:
+                            video.selected_audio_track = video.audio_tracks[selected_track_as_int]
+                            first_chosen_audio_track = video.selected_audio_track
+                            break
+
+                        else:
+                            print("Invalid input!")
+                            sleep(1)
+                    except ValueError:
+                        print("Invalid input!")
+                        sleep(1)
+                else:
+                    video.selected_audio_track = 0
 
     def bulk_extract_audio_from_videos(
         self,
@@ -47,7 +104,6 @@ class VideoHandler:
 
             did_extract = self.extract_audio(
                 video_file=video_file,
-                audio_track=0,
                 output_file=output_full_path,
             )
 
@@ -62,7 +118,7 @@ class VideoHandler:
 
         return audio_files
 
-    def extract_audio(self, video_file: VideoFile, audio_track: int, output_file: str) -> bool:
+    def extract_audio(self, video_file: VideoFile, output_file: str) -> bool:
         """Extracts an audio track from a video file using ffmpeg."""
 
         if os.path.isfile(video_file.absolute_path):
@@ -84,7 +140,7 @@ class VideoHandler:
                 "-map",
                 "0:v:0",
                 "-map",
-                f"0:a:{audio_track}",
+                f"0:a:{video_file.selected_audio_track}",
                 f"{output_file}",
             ]
             ff = FfmpegProgress(command)

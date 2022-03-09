@@ -34,6 +34,9 @@ def confirm_args(args, video_files: list[VideoFile]):
     while True:
 
         def print_settings():
+            print("--------------------------------------------------")
+            print("Please check and confirm the following settings:")
+            print("--------------------------------------------------")
             print(f"Video directory: {args.video_dir}")
             print(f"Output directory: {args.output_dir}")
             print(f"Album Art file: {args.album_art}")

@@ -21,6 +21,8 @@ if __name__ == "__main__":
     video_handler = VideoHandler()
     videos = video_handler.load_videos_in_directory(path=args.video_dir)
 
+    video_handler.select_audio_tracks(videos)
+
     confirm_args(args=args, video_files=videos)
 
     num_videos = len(videos)
