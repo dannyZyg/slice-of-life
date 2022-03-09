@@ -17,13 +17,13 @@ class VideoHandler:
     def list_videos(videos: list[VideoFile]) -> None:
         for video in videos:
             print(f"{video.title}{video.extension}")
-            print(f"    -> selected audio track :: {video.selected_audio_track.language}")
+            print(f"    -> selected audio track :: {video.audio_tracks[video.selected_audio_track].language}")
 
     def load_videos_in_directory(self, path: str) -> list[VideoFile]:
 
         videos = []
 
-        for file in os.listdir(path):
+        for file in tqdm(os.listdir(path)):
             file_title, file_ext = os.path.splitext(file)
 
             is_supported_file_type = self.validate_is_supported_video_file(file_ext)
@@ -54,13 +54,12 @@ class VideoHandler:
                         ]
 
                         if matching_tracks:
-                            matching_audio_track = video.audio_tracks[matching_tracks[0]]
                             print("--------------------------------------------------")
                             print(f"Audio track chosen for {video.title}")
                             print(
                                 f"* Using the audio track selected for video 1 as it exists in {video.title}"
                             )
-                            video.selected_audio_track = matching_audio_track
+                            video.selected_audio_track = matching_tracks[0]
                             break
 
                     print("--------------------------------------------------")
@@ -77,8 +76,8 @@ class VideoHandler:
                     try:
                         selected_track_as_int = int(selected_track)
                         if selected_track_as_int in valid_track_ids:
-                            video.selected_audio_track = video.audio_tracks[selected_track_as_int]
-                            first_chosen_audio_track = video.selected_audio_track
+                            video.selected_audio_track = selected_track_as_int
+                            first_chosen_audio_track = video.audio_tracks[selected_track_as_int]
                             break
 
                         else:

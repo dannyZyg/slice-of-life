@@ -19,6 +19,9 @@ if __name__ == "__main__":
     segment_time = args.segment_time
 
     video_handler = VideoHandler()
+    print("--------------------------------------------------")
+    print("Loading video metadata...")
+    print("--------------------------------------------------")
     videos = video_handler.load_videos_in_directory(path=args.video_dir)
 
     video_handler.select_audio_tracks(videos)

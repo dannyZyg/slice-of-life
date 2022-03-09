@@ -38,8 +38,6 @@ class AudioHandler:
     def split_audio(self, audio_file: AudioFile, segment_time: int = 180, output_dir: str = "/tmp") -> bool:
         """Splits an audio track at intervals determined by the supplied segment time in seconds."""
 
-        output = f"{output_dir}/{audio_file.title}%03d.mp3"
-
         command = [
             "ffmpeg",
             "-y",
@@ -51,7 +49,7 @@ class AudioHandler:
             f"{segment_time}",
             "-c",
             "copy",
-            f"{output}",
+            f"{output_dir}/{audio_file.title}%03d.mp3",
         ]
 
         ff = FfmpegProgress(command)
