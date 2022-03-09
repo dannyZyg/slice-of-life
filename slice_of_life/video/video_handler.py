@@ -55,6 +55,8 @@ class VideoHandler:
 
                         if matching_tracks:
                             matching_audio_track = video.audio_tracks[matching_tracks[0]]
+                            print("--------------------------------------------------")
+                            print(f"Audio track chosen for {video.title}")
                             print(
                                 f"* Using the audio track selected for video 1 as it exists in {video.title}"
                             )
@@ -80,10 +82,10 @@ class VideoHandler:
                             break
 
                         else:
-                            print("Invalid input!")
+                            print(f"Invalid input! Possible values are: {valid_track_ids}")
                             sleep(1)
                     except ValueError:
-                        print("Invalid input!")
+                        print(f"Invalid input! Possible values are: {valid_track_ids}")
                         sleep(1)
                 else:
                     video.selected_audio_track = 0
