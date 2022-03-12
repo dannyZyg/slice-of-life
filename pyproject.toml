@@ -12,6 +12,7 @@ ffmpeg-progress-yield = "^0.2.0"
 tqdm = "^4.63.0"
 pre-commit = "^2.17.0"
 mypy = "^0.931"
+pymkv = "^1.0.8"
 
 [tool.poetry.dev-dependencies]
 
