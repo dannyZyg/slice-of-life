@@ -1,7 +1,4 @@
-
-# Immersion Utils
-
-## 1. slice of life
+# slice of life
 
 Bulk rip audio from video files and split into small chunks.
 
