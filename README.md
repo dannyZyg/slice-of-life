@@ -13,10 +13,10 @@ through tracks (or shuffle).
 - Progress bar from [tqdm](https://github.com/tqdm/tqdm)
 - Chance to confirm options and files before processing
 
-#### In Progress
+#### Things to be included
 
-- Album art embedding
-- Prompting to select audio tracks before processing
+- [x] Prompting to select audio tracks before processing
+- [ ] Album art embedding
 
 
 #### Usage
