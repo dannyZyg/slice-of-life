@@ -1,6 +1,6 @@
 import os
 from audio.audio_file import AudioFile
-from ffmpeg_progress_yield import FfmpegProgress
+import subprocess
 from mutagen.easyid3 import EasyID3
 
 
@@ -49,11 +49,11 @@ class AudioHandler:
             f"{segment_time}",
             "-c",
             "copy",
-            f"{output_dir}/{audio_file.title}%03d.mp3",
+            f"{output_dir}/{audio_file.title}_%03d.mp3",
         ]
 
-        ff = FfmpegProgress(command)
-        ff.run_command_with_progress()
+        if subprocess.run(command).returncode != 0:
+            print("There was an error splitting the audio file.")
 
         return True
 
