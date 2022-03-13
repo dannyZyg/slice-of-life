@@ -31,7 +31,7 @@ class VideoHandler:
             if is_supported_file_type:
                 videos.append(VideoFile(title=file_title, extension=file_ext, absolute_path=f"{path}/{file}"))
 
-        return videos
+        return sorted(videos, key=lambda v: v.title)
 
     def select_audio_tracks(self, videos):
 
