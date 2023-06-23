@@ -1,15 +1,13 @@
-from typing import List
-from time import sleep
-import os
 import logging
+import os
+from time import sleep
+from typing import List
 
+from audio.audio_file import AudioFile
 from ffmpeg_progress_yield import FfmpegProgress
 from prettytable import PrettyTable
 from tqdm import tqdm
-
 from video.video_file import VideoFile
-from audio.audio_file import AudioFile
-
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +30,10 @@ class VideoHandler:
 
         for video in videos:
             table.add_row(
-                [f"{video.title}{video.extension}", {video.audio_tracks[video.selected_audio_track].language}]
+                [
+                    f"{video.title}{video.extension}",
+                    str(video.audio_tracks[video.selected_audio_track].language),
+                ]
             )
 
         print(table)

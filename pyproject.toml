@@ -17,6 +17,7 @@ pymkv = "^1.0.8"
 black = "^23.3.0"
 ruff = "^0.0.275"
 prettytable = "^3.8.0"
+isort = "^5.12.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

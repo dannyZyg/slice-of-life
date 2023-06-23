@@ -1,10 +1,12 @@
 import logging
-from signal import signal, SIGINT, SIGKILL
+import os
+import webbrowser
+from signal import SIGINT, signal
 from sys import exit, stdout
 
 from audio.audio_handler import AudioHandler
+from utils.args import confirm_args, get_args
 from video.video_handler import VideoHandler
-from utils.args import get_args, confirm_args
 
 logger = logging.getLogger("slice_of_life")
 logging.basicConfig(level=logging.INFO)
@@ -22,14 +24,14 @@ def main():
     video_handler = VideoHandler()
     logger.info("Loading video metadata...")
 
-    if args.video_dir:
-        videos = video_handler.load_videos_in_directory(path=args.video_dir)
+    if args.series_dir:
+        videos = video_handler.load_videos_in_directory(path=args.series_dir)
     else:
         videos = []
-        video = video_handler.load_single_video(path=args.video_file)
+        video = video_handler.load_single_video(path=args.film_file)
 
         if video is None:
-            logger.error(f"Incompatable video file: {args.video_file}")
+            logger.error(f"Incompatable video file: {args.film_file}")
             exit(1)
 
         videos = [video]
@@ -54,10 +56,11 @@ def main():
 
     logger.info(f"Slicing audio for {num_text_audio}...\n")
 
+    split_path = os.path.join(args.output_dir, args.artist_name.replace(" ", "_").lower())
+
     episode_splits = audio_handler.bulk_split_audio_files(
         audio_files=audio_files,
-        destination_path=args.output_dir,
-        artist_name=args.artist_name,
+        destination_path=split_path,
     )
 
     logger.info("Tagging MP3 files...\n")
@@ -65,9 +68,14 @@ def main():
     audio_handler.bulk_tag_mp3s(
         split_files=episode_splits,
         artist_name=args.artist_name,
+        album_art=args.album_art,
+        season_number=args.season_number,
     )
 
     stdout.write("Done!\n")
+
+    # TODO check if mac or linux
+    webbrowser.open(f"file://{split_path}")
 
 
 if __name__ == "__main__":
