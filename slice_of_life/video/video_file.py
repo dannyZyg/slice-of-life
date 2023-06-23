@@ -1,13 +1,13 @@
+from typing import Optional, List
+
 from pymkv import MKVFile, MKVTrack
-from typing import Optional
 
 
 class VideoFile:
-
     title: str
     extension: str
     absolute_path: str
-    audio_tracks: list[MKVTrack]
+    audio_tracks: List[MKVTrack]
     selected_audio_track: Optional[int] = None
     is_mkv: bool = False
 
@@ -20,10 +20,10 @@ class VideoFile:
             self.is_mkv = True
             self.load_mkv_meta()
 
-    def get_subtitle_tracks(self, tracks: list[MKVTrack]) -> list[MKVTrack]:
+    def get_subtitle_tracks(self, tracks: List[MKVTrack]) -> List[MKVTrack]:
         return list(filter(lambda track: track._track_type == "subtitles", tracks))
 
-    def get_audio_tracks(self, tracks: list[MKVTrack]) -> list[MKVTrack]:
+    def get_audio_tracks(self, tracks: List[MKVTrack]) -> List[MKVTrack]:
         return list(filter(lambda track: track._track_type == "audio", tracks))
 
     def load_mkv_meta(self):
