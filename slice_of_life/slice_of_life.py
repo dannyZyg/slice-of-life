@@ -9,7 +9,7 @@ from utils.args import confirm_args, get_args
 from video.video_handler import VideoHandler
 
 logger = logging.getLogger("slice_of_life")
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 
 def handler(signal_received, frame):
@@ -38,12 +38,14 @@ def main():
 
     video_handler.select_audio_tracks(videos)
 
-    confirm_args(args=args, video_files=videos)
+    confirmed = confirm_args(args=args, video_files=videos)
+
+    if not confirmed:
+        exit(0)
 
     num_videos = len(videos)
-    num_text_video = "1 video" if num_videos == 1 else f"{num_videos} videos"
-
-    logger.info("Extracting audio from %s...\n", num_text_video)
+    videos_text = "1 video" if num_videos == 1 else f"{num_videos} videos"
+    logger.info(f"Extracting audio from {videos_text}...\n")
 
     audio_files = video_handler.bulk_extract_audio_from_videos(
         video_files=videos,
@@ -52,11 +54,11 @@ def main():
 
     audio_handler = AudioHandler()
     num_audio = len(audio_files)
-    num_text_audio = "1 file" if num_audio == 1 else f"{num_audio} files"
-
-    logger.info(f"Slicing audio for {num_text_audio}...\n")
+    audio_text = "1 file" if num_audio == 1 else f"{num_audio} files"
+    logger.info(f"Slicing audio for {audio_text}...\n")
 
     split_path = os.path.join(args.output_dir, args.artist_name.replace(" ", "_").lower())
+    logger.debug(f"split_path: {split_path}")
 
     episode_splits = audio_handler.bulk_split_audio_files(
         audio_files=audio_files,

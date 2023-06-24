@@ -38,7 +38,7 @@ def get_args():
     return parser.parse_args()
 
 
-def confirm_args(args, video_files: List[VideoFile]):
+def confirm_args(args, video_files: List[VideoFile]) -> bool:
     while True:
 
         def print_settings():
@@ -82,8 +82,8 @@ def confirm_args(args, video_files: List[VideoFile]):
             accept = input("\nContinue with these settings? yes/no > \n")
 
         if accept == "no" or accept == "n":
-            exit(0)
+            return False
 
         if accept == "yes" or accept == "y":
             stdout.flush()
-            break
+            return True

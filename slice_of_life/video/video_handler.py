@@ -42,22 +42,18 @@ class VideoHandler:
         videos = []
 
         for file in tqdm(os.listdir(path)):
-            file_title, file_ext = os.path.splitext(file)
+            video = self.load_single_video(f"{path}/{file}")
 
-            is_supported_file_type = self.validate_is_supported_video_file(file_ext)
-
-            if is_supported_file_type:
-                videos.append(VideoFile(title=file_title, extension=file_ext, absolute_path=f"{path}/{file}"))
+            if video:
+                videos.append(video)
 
         return sorted(videos, key=lambda v: v.title)
 
     def load_single_video(self, path: str) -> None | VideoFile:
-        file_title, file_ext = os.path.splitext(path)
+        basename = os.path.basename(path)
+        file_title, file_ext = os.path.splitext(basename)
 
-        print(file_ext)
-        is_supported_file_type = self.validate_is_supported_video_file(file_ext)
-
-        if not is_supported_file_type:
+        if not self.validate_is_supported_video_file(file_ext):
             return None
 
         return VideoFile(title=file_title, extension=file_ext, absolute_path=path)
@@ -131,11 +127,11 @@ class VideoHandler:
 
         for video_file in tqdm(video_files, total=len(video_files)):
             output_file = f"{video_file.title}{file_ext}"
-            output_full_path = f"{destination_path}/{output_file}"
+            output_file_full_path = f"{destination_path}/{output_file}"
 
             did_extract = self.extract_audio(
                 video_file=video_file,
-                output_file=output_full_path,
+                output_file=output_file_full_path,
             )
 
             if did_extract:
@@ -143,7 +139,7 @@ class VideoHandler:
                     AudioFile(
                         title=video_file.title,
                         extension=file_ext,
-                        absolute_path=output_full_path,
+                        absolute_path=output_file_full_path,
                     )
                 )
 
@@ -151,36 +147,39 @@ class VideoHandler:
 
     def extract_audio(self, video_file: VideoFile, output_file: str) -> bool:
         """Extracts an audio track from a video file using ffmpeg."""
+        logger.debug(f"output_file when extracting audio: {output_file}")
 
-        if os.path.isfile(video_file.absolute_path):
-            command = [
-                "ffmpeg",
-                "-y",
-                "-i",
-                f"{video_file.absolute_path}",
-                "-vn",
-                "-ar",
-                "44100",
-                "-ac",
-                "2",
-                "-ab",
-                "192k",
-                "-f",
-                "mp3",
-                "-map",
-                "0:v:0",
-                "-map",
-                f"0:a:{video_file.selected_audio_track}",
-                f"{output_file}",
-            ]
-            ff = FfmpegProgress(command)
+        try:
+            if os.path.isfile(video_file.absolute_path):
+                command = [
+                    "ffmpeg",
+                    "-y",
+                    "-i",
+                    f"{video_file.absolute_path}",
+                    "-vn",
+                    "-ar",
+                    "44100",
+                    "-ac",
+                    "2",
+                    "-ab",
+                    "192k",
+                    "-f",
+                    "mp3",
+                    "-map",
+                    "0:v:0",
+                    "-map",
+                    f"0:a:{video_file.selected_audio_track}",
+                    f"{output_file}",
+                ]
+                ff = FfmpegProgress(command)
 
-            with tqdm(total=100, position=1, desc=video_file.title) as pbar:
-                for progress in ff.run_command_with_progress():
-                    pbar.update(progress - pbar.n)
+                with tqdm(total=100, position=1, desc=video_file.title) as pbar:
+                    for progress in ff.run_command_with_progress():
+                        pbar.update(progress - pbar.n)
+            else:
+                print(f"File {video_file} does not exist.")
+                return False
+        except RuntimeError as err:
+            logger.error(f"ERROR: {err}")
 
-            return True
-
-        else:
-            print(f"File {video_file} does not exist.")
-            return False
+        return True

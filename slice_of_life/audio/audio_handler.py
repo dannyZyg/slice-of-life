@@ -81,12 +81,15 @@ class AudioHandler:
         season_label = f" Season {season_number}" if season_number else ""
         logger.debug(f"Season Label: {season_label}")
 
+        # Go through each episode
         for index, episode in enumerate(split_files):
-            for audio_file in episode:
-                episode_label = f" Episode {index + 1}"
-                album_name = f"{artist_name}{season_label}{episode_label}"
-                logger.debug(f"Album Name: {album_name}")
+            episode_label = f" Episode {index + 1}" if len(split_files) > 1 else ""
+            logger.debug(f"Episode Label: {episode_label}")
+            album_name = f"{artist_name}{season_label}{episode_label}"
+            logger.debug(f"Album Name: {album_name}")
 
+            # Tag each episode and attach album art
+            for audio_file in episode:
                 self.tag_mp3(
                     audio_file=audio_file,
                     artist_name=artist_name,
@@ -94,18 +97,7 @@ class AudioHandler:
                 )
 
                 if album_art:
-                    audio = ID3(audio_file.absolute_path)
-
-                    # Create an APIC tag for album art
-                    apic = APIC()
-                    apic.type = 3  # Front cover image
-                    apic.mime = "image/jpeg"
-                    apic.desc = "Cover"
-                    with open(album_art, "rb") as f:
-                        apic.data = f.read()
-
-                    audio.add(apic)
-                    audio.save()
+                    self.add_album_art(audio_file.absolute_path, album_art)
 
     def tag_mp3(self, audio_file: AudioFile, artist_name: str, album_name: str) -> None:
         """Tags mp3 file with the supplied metadata."""
@@ -113,4 +105,18 @@ class AudioHandler:
         audio["title"] = audio_file.title
         audio["artist"] = artist_name
         audio["album"] = album_name
+        audio.save()
+
+    def add_album_art(self, audio_path: str, album_art_path: str) -> None:
+        audio = ID3(audio_path)
+
+        # Create an APIC tag for album art
+        apic = APIC()
+        apic.type = 3  # Front cover image
+        apic.mime = "image/jpeg"
+        apic.desc = "Cover"
+        with open(album_art_path, "rb") as f:
+            apic.data = f.read()
+
+        audio.add(apic)
         audio.save()
